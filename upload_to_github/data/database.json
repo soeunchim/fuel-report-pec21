@@ -1,6 +1,6 @@
 {
   "settings": {
-    "appName": "ប្រព័ន្ធគ្រប់គ្រងរបាយការណ៍ប្រេង គ.ជ.ប",
+    "appName": "ប្រព័ន្ធគ្រប់គ្រងរបាយការណ៍ ល.ខ.ប តាកែវ (PEC21)",
     "orgName": "គណៈកម្មការរៀបចំការបោះឆ្នោតខេត្តតាកែវ (PEC21)",
     "subOrgName": "លេខាធិការដ្ឋានរៀបចំការបោះឆ្នោត ខេត្តតាកែវ (ល.ខ.ប)",
     "location": "តាកែវ",
@@ -23,10 +23,10 @@
     {
       "id": 1,
       "username": "superadmin",
-      "password": "admin123",
-      "name": "អភិបាលជាន់ខ្ពស់ (SuperAdmin)",
+      "password": "111984",
+      "name": "ជឹម សឿន",
       "role": "SuperAdmin",
-      "roleLabel": "អភិបាលជាន់ខ្ពស់",
+      "roleLabel": "SuperAdmin",
       "active": true,
       "createdAt": "2026-11-07T05:40:35.403Z"
     },
