@@ -1,0 +1,25 @@
+{
+  "name": "fuel-report-management",
+  "version": "1.0.0",
+  "description": "ប្រព័ន្ធគ្រប់គ្រងរបាយការណ៍ប្រេង គណៈកម្មការរៀបចំការបោះឆ្នោតខេត្តតាកែវ PEC21",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "fuel",
+    "report",
+    "pec21",
+    "election"
+  ],
+  "author": "PEC21",
+  "license": "ISC",
+  "dependencies": {
+    "adm-zip": "^0.6.1",
+    "axios": "^1.21.0",
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "qrcode": "^1.5.4",
+    "xlsx": "^0.18.5"
+  }
+}

@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: fuel-report-pec21
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 3027

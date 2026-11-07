@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ប្រព័ន្ធគ្រប់គ្រងរបាយការណ៍ប្រេង គ.ជ.ប | PEC21 ខេត្តតាកែវ</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="top-header">
+    <div class="header-brand">
+      <img src="assets/logo.png" alt="NEC Logo" class="header-logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/4/4b/National_Election_Committee_of_Cambodia_Seal.svg'">
+      <div class="header-titles">
+        <h1 class="font-moul">ប្រព័ន្ធគ្រប់គ្រងរបាយការណ៍ប្រេង គ.ជ.ប</h1>
+        <h2>គណៈកម្មការរៀបចំការបោះឆ្នោតខេត្តតាកែវ (PEC21)</h2>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-success btn-sm" id="btn-sync-header" onclick="syncGoogleSheetsNow()">
+        ⚡ ធ្វើសមកាលកម្មភ្លាមៗ (Sync Google Sheets Now)
+      </button>
+      <div class="badge-storage" id="badge-storage-mode">
+        <span class="pulse-dot"></span> Storage: Online DB + Google Sheet
+      </div>
+      <div class="user-profile-badge" id="header-user-profile">
+        <span class="font-semibold">អភិបាលជាន់ខ្ពស់ (SuperAdmin)</span>
+        <span class="role-tag">SuperAdmin</span>
+      </div>
+      <button class="btn-logout" onclick="alert('អ្នកកំពុងស្ថិតក្នុងប្រព័ន្ធជា SuperAdmin!')">គណនី</button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs">
+    <button class="nav-tab active" data-tab="dashboard">📊 ផ្ទាំងព័ត៌មាន (Dashboard)</button>
+    <button class="nav-tab" data-tab="fuel">⛽ ការប្រើប្រាស់ប្រេង (Fuel Usage)</button>
+    <button class="nav-tab" data-tab="stock">📦 សន្និធិ & បញ្ចូលប្រេង (Stock & Inflow)</button>
+    <button class="nav-tab" data-tab="staff">👥 បញ្ជីរាយនាមមន្ត្រី (Staff)</button>
+    <button class="nav-tab" data-tab="export">🖨️ ការបោះពុម្ព & នាំចេញ (Print & Export)</button>
+    <button class="nav-tab" data-tab="users" id="tab-btn-users">👤 គ្រប់គ្រងគណនី (Users)</button>
+    <button class="nav-tab" data-tab="settings">⚙️ ការកំណត់ & Cloud (Settings)</button>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- TAB 1: DASHBOARD -->
+    <section id="content-dashboard" class="tab-content active">
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <!-- Gasoline -->
+        <div class="stat-card gasoline">
+          <div class="stat-header">
+            <span class="stat-label">🟢 ប្រេងសាំង (E.A)</span>
+            <span style="font-size: 18px;">⛽</span>
+          </div>
+          <div class="stat-value" id="stat-gas-close">0 លីត្រ</div>
+          <div class="stat-sub">
+            <span id="stat-gas-open">ដើមគ្រា: 250</span>
+            <span id="stat-gas-in" style="color: #10b981;">ចូល: +0</span>
+            <span id="stat-gas-out" style="color: #ef4444;">ចេញ: -250</span>
+          </div>
+        </div>
+
+        <!-- Diesel -->
+        <div class="stat-card diesel">
+          <div class="stat-header">
+            <span class="stat-label">🔵 ប្រេងម៉ាស៊ូត (D.O)</span>
+            <span style="font-size: 18px;">🛢️</span>
+          </div>
+          <div class="stat-value" id="stat-diesel-close">0 លីត្រ</div>
+          <div class="stat-sub">
+            <span id="stat-diesel-open">ដើមគ្រា: 640</span>
+            <span id="stat-diesel-in" style="color: #10b981;">ចូល: +0</span>
+            <span id="stat-diesel-out" style="color: #ef4444;">ចេញ: -640</span>
+          </div>
+        </div>
+
+        <!-- Oil -->
+        <div class="stat-card oil">
+          <div class="stat-header">
+            <span class="stat-label">🟡 ប្រេងម៉ាស៊ីន (M.O)</span>
+            <span style="font-size: 18px;">🧴</span>
+          </div>
+          <div class="stat-value" id="stat-oil-close">0 លីត្រ</div>
+          <div class="stat-sub">
+            <span id="stat-oil-open">ដើមគ្រា: 50</span>
+            <span id="stat-oil-in" style="color: #10b981;">ចូល: +0</span>
+            <span id="stat-oil-out" style="color: #ef4444;">ចេញ: -50</span>
+          </div>
+        </div>
+
+        <!-- Overall Count -->
+        <div class="stat-card count">
+          <div class="stat-header">
+            <span class="stat-label">🟣 ប្រតិបត្តិការ & មន្ត្រី</span>
+            <span style="font-size: 18px;">📋</span>
+          </div>
+          <div class="stat-value"><span id="stat-total-tx">0</span> <span style="font-size: 14px; font-weight: normal; color: #64748b;">ប័ណ្ណ</span></div>
+          <div class="stat-sub">
+            <span>ចំនួនមន្ត្រីក្នុងបញ្ជី: <b id="stat-total-staff">0</b> នាក់</span>
+            <span style="color: #10b981;">ប្រព័ន្ធដំណើរការស្រួល</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚡ សកម្មភាពរហ័ស (Quick Actions)</div>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="openNewFuelModal()">➕ បញ្ចូលការបញ្ចេញប្រេងថ្មី</button>
+          <button class="btn btn-warning" onclick="openInflowModal()">📥 កត់ត្រាការទទួលប្រេងពី គ.ជ.ប</button>
+          <a href="/api/export/excel" class="btn btn-success" download>📊 នាំចេញរបាយការណ៍ Excel (.xlsx)</a>
+          <button class="btn btn-outline" onclick="previewDocument('monthly')">📋 មើលរបាយការណ៍ប្រចាំខែ</button>
+          <button class="btn btn-outline" onclick="showWifiQRModal()">📶 ស្កេន QR ប្រើលើទូរស័ព្ទ (Wi-Fi)</button>
+        </div>
+      </div>
+
+      <!-- Recent Fuel Usage Table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🕒 ការបញ្ចេញប្រេងចុងក្រោយបង្អស់</div>
+          <button class="btn btn-outline btn-sm" onclick="document.querySelector('[data-tab=fuel]').click()">មើលទាំងអស់ →</button>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>កាលបរិច្ឆេទ</th>
+                <th>លេខប័ណ្ណ</th>
+                <th>ឈ្មោះអ្នកស្នើសុំ</th>
+                <th>គោលបំណង/មធ្យោបាយ</th>
+                <th style="text-align: center;">ចំនួនប្រេង</th>
+                <th style="text-align: center;">សកម្មភាព</th>
+              </tr>
+            </thead>
+            <tbody id="recent-dashboard-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: FUEL TRANSACTIONS -->
+    <section id="content-fuel" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⛽ បញ្ជីការប្រើប្រាស់ប្រេង និងប័ណ្ណបញ្ចេញប្រេង</div>
+          <div style="display: flex; gap: 10px;">
+            <a href="/api/export/excel" class="btn btn-success btn-sm" download>📥 នាំចេញ Excel (.xlsx)</a>
+            <button class="btn btn-primary btn-sm" onclick="openNewFuelModal()">➕ បញ្ចូលការបញ្ចេញប្រេងថ្មី</button>
+          </div>
+        </div>
+
+        <!-- Filter Row -->
+        <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 250px;">
+            <input type="text" id="filter-search" class="form-control" placeholder="🔍 ស្វែងរកតាមឈ្មោះ, លេខប័ណ្ណ, លេខសំណើ, ឬគោលបំណង...">
+          </div>
+          <div style="width: 150px;">
+            <select id="filter-month" class="form-control">
+              <option value="">-- គ្រប់ខែ --</option>
+              <option value="9">ខែកញ្ញា</option>
+              <option value="10">ខែតុលា</option>
+              <option value="11">ខែវិច្ឆិកា</option>
+              <option value="12">ខែធ្នូ</option>
+            </select>
+          </div>
+          <div style="width: 150px;">
+            <select id="filter-status" class="form-control">
+              <option value="">-- គ្រប់ស្ថានភាព --</option>
+              <option value="approved">អនុម័តរួច</option>
+              <option value="pending">រង់ចាំ</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px; text-align: center;">ល.រ</th>
+                <th>កាលបរិច្ឆេទ</th>
+                <th style="text-align: center;">លេខប័ណ្ណ</th>
+                <th style="text-align: center;">លេខសំណើ</th>
+                <th>ឈ្មោះអ្នកស្នើសុំ</th>
+                <th>គោលបំណង/មធ្យោបាយ</th>
+                <th style="text-align: center;">បរិមាណប្រេង</th>
+                <th style="text-align: center;">ស្ថានភាព</th>
+                <th style="text-align: center;">សកម្មភាព / បោះពុម្ព</th>
+              </tr>
+            </thead>
+            <tbody id="fuel-table-body">
+              <!-- Dynamically loaded -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: STOCK & INFLOW -->
+    <section id="content-stock" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📦 តារាងសមតុល្យសន្និធិប្រេងឥន្ធនៈ (Stock Balance)</div>
+          <button class="btn btn-warning btn-sm" onclick="openInflowModal()">📥 កត់ត្រាការទទួលប្រេងពី គ.ជ.ប</button>
+        </div>
+        
+        <div class="table-responsive" style="margin-bottom: 24px;">
+          <table>
+            <thead>
+              <tr style="background: #f1f5f9; text-align: center;">
+                <th>ល.រ</th>
+                <th>ប្រភេទប្រេងឥន្ធនៈ</th>
+                <th>ឯកតា</th>
+                <th>សមតុល្យដើមគ្រា</th>
+                <th>បញ្ចូលក្នុងគ្រា</th>
+                <th>សរុបក្នុងគ្រា</th>
+                <th>បញ្ចេញក្នុងគ្រា</th>
+                <th>សមតុល្យចុងគ្រា</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="text-align: center;">
+                <td>១</td>
+                <td style="text-align: left; font-weight: 600;">ប្រេងសាំង (E.A)</td>
+                <td>លីត្រ</td>
+                <td id="tbl-gas-open">250</td>
+                <td id="tbl-gas-in" style="color: #10b981;">0</td>
+                <td id="tbl-gas-tot">250</td>
+                <td id="tbl-gas-out" style="color: #ef4444;">250</td>
+                <td style="font-weight: 700;" id="tbl-gas-close">0</td>
+              </tr>
+              <tr style="text-align: center;">
+                <td>២</td>
+                <td style="text-align: left; font-weight: 600;">ប្រេងម៉ាស៊ូត (D.O)</td>
+                <td>លីត្រ</td>
+                <td id="tbl-diesel-open">640</td>
+                <td id="tbl-diesel-in" style="color: #10b981;">0</td>
+                <td id="tbl-diesel-tot">640</td>
+                <td id="tbl-diesel-out" style="color: #ef4444;">640</td>
+                <td style="font-weight: 700;" id="tbl-diesel-close">0</td>
+              </tr>
+              <tr style="text-align: center;">
+                <td>៣</td>
+                <td style="text-align: left; font-weight: 600;">ប្រេងម៉ាស៊ីន (M.O)</td>
+                <td>លីត្រ</td>
+                <td id="tbl-oil-open">50</td>
+                <td id="tbl-oil-in" style="color: #10b981;">0</td>
+                <td id="tbl-oil-tot">50</td>
+                <td id="tbl-oil-out" style="color: #ef4444;">50</td>
+                <td style="font-weight: 700;" id="tbl-oil-close">0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: STAFF REGISTRY -->
+    <section id="content-staff" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">👥 បញ្ជីរាយនាមមន្ត្រី ល.ខ.ប តាកែវ (Staff Registry)</div>
+          <button class="btn btn-primary btn-sm" onclick="openNewStaffModal()">➕ បន្ថែមមន្ត្រីថ្មី</button>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px; text-align: center;">ល.រ</th>
+                <th>គោត្តនាម-នាម</th>
+                <th style="text-align: center;">ភេទ</th>
+                <th>ងារ</th>
+                <th>តួនាទី</th>
+                <th>លេខទូរស័ព្ទ</th>
+                <th>យានយន្ត/ស្លាកលេខ</th>
+                <th style="text-align: center;">សកម្មភាព</th>
+              </tr>
+            </thead>
+            <tbody id="staff-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: PRINT FORMS & EXPORT -->
+    <section id="content-export" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🖨️ ការបោះពុម្ព និងនាំចេញឯកសារផ្លូវការ (Official Forms Export)</div>
+        </div>
+        <p style="color: #64748b; margin-bottom: 20px;">
+          លោកអ្នកអាចធ្វើការមើលគំរូទម្រង់បោះពុម្ព (Print Preview) ដោយផ្ទាល់ក្នុងកម្មវិធី ឬទាញយកជាឯកសារ Word (.docx) និង Excel (.xlsx) តាមស្តង់ដាររដ្ឋបាលជាតិ៖
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+          
+          <!-- Doc 1: Excel Fuel Report -->
+          <div class="card" style="border-left: 4px solid #10b981; margin-bottom: 0;">
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="font-size: 32px;">📊</span>
+              <div>
+                <h3 style="font-size: 15px; font-weight: 700; color: #166534;">១. របាយការណ៍ប្រេងឥន្ធនៈ</h3>
+                <p style="font-size: 12px; color: #64748b; margin: 4px 0 12px 0;">
+                  តារាងគណនាការប្រើប្រាស់ប្រេងឥន្ធនៈ សន្និធិដើមគ្រា បញ្ចូល បញ្ចេញ និងសមតុល្យចុងគ្រា ព្រមទាំង Link Mail Merge
+                </p>
+                <a href="/api/export/excel" class="btn btn-success btn-sm" download>📥 នាំចេញជា Excel (.xlsx)</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Doc 2: Word Voucher -->
+          <div class="card" style="border-left: 4px solid #2563eb; margin-bottom: 0;">
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="font-size: 32px;">📄</span>
+              <div>
+                <h3 style="font-size: 15px; font-weight: 700; color: #1e40af;">២. ប័ណ្ណបញ្ចេញប្រេងឥន្ធនៈ</h3>
+                <p style="font-size: 12px; color: #64748b; margin: 4px 0 12px 0;">
+                  ប័ណ្ណបើកប្រេងជាផ្លូវការ សម្រាប់អ្នកកាន់ឃ្លាំង ប្រធានផ្នែករដ្ឋបាល-ហិរញ្ញវត្ថុ និងអ្នកទទួលប្រេង
+                </p>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-primary btn-sm" onclick="previewDocument('voucher', fuelList[0]?.id)">🖨️ បោះពុម្ពគំរូ</button>
+                  <a href="/api/export/docx/voucher/1" class="btn btn-outline btn-sm" download>📥 នាំចេញ Word (.docx)</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Doc 3: Word Request -->
+          <div class="card" style="border-left: 4px solid #8b5cf6; margin-bottom: 0;">
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="font-size: 32px;">📝</span>
+              <div>
+                <h3 style="font-size: 15px; font-weight: 700; color: #6d28d9;">៣. សំណើសុំប្រេង</h3>
+                <p style="font-size: 12px; color: #64748b; margin: 4px 0 12px 0;">
+                  លិខិតសំណើសុំប្រេងគោរពជូនលោកស្រីប្រធានលេខាធិការដ្ឋានខេត្តរៀបចំការបោះឆ្នោត ខេត្តតាកែវ
+                </p>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-primary btn-sm" onclick="previewDocument('request', fuelList[0]?.id)">🖨️ បោះពុម្ពគំរូ</button>
+                  <a href="/api/export/docx/request/1" class="btn btn-outline btn-sm" download>📥 នាំចេញ Word (.docx)</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Doc 4: Word Financial Report -->
+          <div class="card" style="border-left: 4px solid #f59e0b; margin-bottom: 0;">
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="font-size: 32px;">📑</span>
+              <div>
+                <h3 style="font-size: 15px; font-weight: 700; color: #b45309;">៤. របាយការណ៍ហិរញ្ញវត្ថុ</h3>
+                <p style="font-size: 12px; color: #64748b; margin: 4px 0 12px 0;">
+                  របាយការណ៍ស្តីពីការចុះបំពេញបេសកកម្មការងារ និងការពិនិត្យតាមឃុំ/សង្កាត់ យោងតាមលិខិតឧទ្ទេសនាម
+                </p>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-primary btn-sm" onclick="previewDocument('financial', fuelList[0]?.id)">🖨️ បោះពុម្ពគំរូ</button>
+                  <a href="/api/export/docx/financial/1" class="btn btn-outline btn-sm" download>📥 នាំចេញ Word (.docx)</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Doc 5: Word Monthly Fuel Report -->
+          <div class="card" style="border-left: 4px solid #0d9488; margin-bottom: 0;">
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="font-size: 32px;">📋</span>
+              <div>
+                <h3 style="font-size: 15px; font-weight: 700; color: #0f766e;">៥. របាយការណ៍ប្រើប្រាស់ប្រេង</h3>
+                <p style="font-size: 12px; color: #64748b; margin: 4px 0 12px 0;">
+                  របាយការណ៍បូកសរុបការប្រើប្រាស់ប្រេងឥន្ធនៈប្រចាំខែ គោរពជូនឯកឧត្តមប្រធាន គ.ជ.ប
+                </p>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-primary btn-sm" onclick="previewDocument('monthly')">🖨️ បោះពុម្ពគំរូ</button>
+                  <a href="/api/export/docx/monthly" class="btn btn-outline btn-sm" download>📥 នាំចេញ Word (.docx)</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: USERS (គ្រប់គ្រងគណនី) -->
+    <section id="content-users" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">👤 ការគ្រប់គ្រងគណនីប្រើប្រាស់ប្រព័ន្ធ (User Accounts)</div>
+          <button class="btn btn-primary btn-sm" onclick="openNewUserModal()">➕ បង្កើតគណនីថ្មី</button>
+        </div>
+        <p style="color: #64748b; margin-bottom: 15px;">
+          គណនីមានកំណត់សិទ្ធិតាមបទដ្ឋានច្បាស់លាស់៖ <b>SuperAdmin, Admin, PEC21, មន្ត្រី ល.ខ.ប, និងអ្នកបញ្ចូលទិន្នន័យ</b>
+        </p>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px; text-align: center;">ល.រ</th>
+                <th>ឈ្មោះគណនី (Username)</th>
+                <th>ឈ្មោះពេញ (Full Name)</th>
+                <th>តួនាទី (Role)</th>
+                <th style="text-align: center;">ស្ថានភាព</th>
+                <th style="text-align: center;">សកម្មភាព</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 7: SETTINGS & CLOUD SYNC -->
+    <section id="content-settings" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚙️ ការកំណត់ប្រព័ន្ធ & Cloud Settings</div>
+          <button class="btn btn-success btn-sm" onclick="syncGoogleSheetsNow()">
+            + ធ្វើសមកាលកម្មភ្លាមៗ (Sync Google Sheets Now)
+          </button>
+        </div>
+
+        <!-- Sub Tabs -->
+        <div class="sub-tabs">
+          <button class="sub-tab active" data-sub="storage">🗄️ ទីតាំងផ្ទុក & Cloud Sync</button>
+          <button class="sub-tab" data-sub="org">🏛️ ស្ថាប័ន & មន្ត្រីទទួលបន្ទុក</button>
+          <button class="sub-tab" data-sub="telegram">📢 ការជូនដំណឹង Telegram</button>
+          <button class="sub-tab" data-sub="script">📜 កូដ Google Apps Script</button>
+          <button class="sub-tab" data-sub="backup">💾 Backup & ស្តារទិន្នន័យ</button>
+          <button class="sub-tab" data-sub="danger">⚠️ តំបន់គ្រោះថ្នាក់ (Reset)</button>
+        </div>
+
+        <!-- Sub Content: Storage Modes -->
+        <div id="sub-storage" class="sub-content active">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h3 style="font-size: 14px; font-weight: 700;">📊 របៀបដំណើរការ & ទីតាំងផ្ទុកទិន្នន័យ (Storage Modes)</h3>
+            <span style="font-size: 12px; color: #16a34a; font-weight: 600;">● កំពុងដំណើរការ៖ Dual Storage (Online DB + Google Sheet)</span>
+          </div>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">
+            ប្រព័ន្ធគាំទ្រដំណើរការបាន ៤ របៀប + ដំណើរការរួមគ្នា (Local, តាម Wi-Fi ផ្ទៃក្នុង, Online Cloud, និង Google Sheet)
+          </p>
+
+          <!-- 4 Cards -->
+          <div class="storage-modes-grid">
+            
+            <!-- Mode 1: Local -->
+            <div class="storage-card" data-mode="local">
+              <div>
+                <div class="storage-card-header">
+                  <span>💻</span>
+                  <span class="storage-tag">របៀបទី ១</span>
+                </div>
+                <div class="storage-title">១. Storage: Local Database</div>
+                <div class="storage-desc">ប្រើលើកុំព្យូទ័រតែមួយ (Offline) មិនបាច់មាន Internet, ល្បឿនលឿន និងទិន្នន័យរក្សាលើកុំព្យូទ័រផ្ទាល់។</div>
+              </div>
+              <div>
+                <div class="storage-url" id="info-local-url">http://localhost:3027</div>
+                <button class="btn btn-outline btn-sm" style="width: 100%; margin-top: 8px;" onclick="switchStorageMode('local')">ជ្រើសរើសរបៀបនេះ</button>
+              </div>
+            </div>
+
+            <!-- Mode 2: Wi-Fi -->
+            <div class="storage-card" data-mode="wifi">
+              <div>
+                <div class="storage-card-header">
+                  <span>📶</span>
+                  <span class="storage-tag">របៀបទី ២</span>
+                </div>
+                <div class="storage-title">២. Storage: Local Wi-Fi ផ្ទៃក្នុង</div>
+                <div class="storage-desc">កុំព្យូទ័រជាម៉ាស៊ីនបម្រើ បើកឱ្យទូរស័ព្ទ ឬកុំព្យូទ័រផ្សេងប្រើ Wi-Fi ឬ Hotspot តែមួយ ចូលប្រើបាន (មិនបាច់មាន Internet)។</div>
+              </div>
+              <div>
+                <div class="storage-url" id="info-wifi-url">http://[IP ម៉ាស៊ីន]:3027</div>
+                <div style="display: flex; gap: 6px; margin-top: 8px;">
+                  <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="switchStorageMode('wifi')">ជ្រើសរើស</button>
+                  <button class="btn btn-outline btn-sm" onclick="showWifiQRModal()">📷 QR</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mode 3: Online -->
+            <div class="storage-card" data-mode="online">
+              <div>
+                <div class="storage-card-header">
+                  <span>🌐</span>
+                  <span class="storage-tag">របៀបទី ៣</span>
+                </div>
+                <div class="storage-title">៣. Storage: Online Database</div>
+                <div class="storage-desc">ដំណើរការលើ Cloud Server (Render / Railway) អាចចូលប្រើពីគ្រប់ទីកន្លែងដែលមាន Internet។</div>
+              </div>
+              <div>
+                <div class="storage-url" id="info-online-url">https://...onrender.com</div>
+                <button class="btn btn-outline btn-sm" style="width: 100%; margin-top: 8px;" onclick="switchStorageMode('online')">ជ្រើសរើស Online DB</button>
+              </div>
+            </div>
+
+            <!-- Mode 4: Google Sheet -->
+            <div class="storage-card" data-mode="sheet">
+              <div>
+                <div class="storage-card-header">
+                  <span>📊</span>
+                  <span class="storage-tag">របៀបទី ៤</span>
+                </div>
+                <div class="storage-title">៤. Storage: Google Sheet</div>
+                <div class="storage-desc">រក្សាទុក និង Sync ទិន្នន័យ (Real-time Sync) ទៅកាន់ Google Sheet តាមរយៈ Google Apps Script Web App។</div>
+              </div>
+              <div>
+                <div class="storage-url">✓ បានភ្ជាប់ URL រួចរាល់</div>
+                <button class="btn btn-outline btn-sm" style="width: 100%; margin-top: 8px;" onclick="switchStorageMode('sheet')">ជ្រើសរើស Sheet តែមួយ</button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Dual Storage Hero Banner -->
+          <div class="dual-storage-banner">
+            <div class="dual-info">
+              <h3>⚡ ដំណើរការទាំងពីរព្រមគ្នា (Dual Storage) <span style="background: #10b981; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">សកម្ម</span></h3>
+              <p>រក្សាទុកក្នុង Database (Cloud/Local) ផង និងធ្វើសមកាលកម្មទិន្នន័យទៅ Google Sheet ផងដោយស្វ័យប្រវត្តិ (Real-time Dual Sync)។</p>
+            </div>
+            <button class="btn btn-success" id="btn-active-dual" onclick="switchStorageMode('dual')">
+              ✓ កំពុងប្រើទាំងពីរព្រមគ្នា
+            </button>
+          </div>
+
+          <!-- Google Sheet Endpoint URL Form -->
+          <form onsubmit="saveSettings(event)" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
+            <div class="form-group">
+              <label class="form-label">🔗 Google Apps Script Web App URL (Google Sheets Database Endpoint)</label>
+              <input type="text" id="setting-google-url" class="form-control" placeholder="https://script.google.com/macros/s/.../exec">
+              <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+                ចម្លង Web App URL ពី Google Apps Script មកបិទភ្ជាប់ត្រង់នេះដើម្បីធ្វើសមកាលកម្មទិន្នន័យ
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button type="submit" class="btn btn-primary btn-sm">💾 រក្សាទុក URL</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="syncGoogleSheetsNow()">⚡ ធ្វើសមកាលកម្មភ្លាមៗ</button>
+              <span style="font-size: 12px; color: #64748b; align-self: center; margin-left: auto;">
+                Sync ចុងក្រោយ: <b id="last-sync-time">-</b>
+              </span>
+            </div>
+          </form>
+        </div>
+
+        <!-- Sub Content: Org & Signatories -->
+        <div id="sub-org" class="sub-content">
+          <form onsubmit="saveSettings(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">ឈ្មោះអង្គភាពធំ (Unit)</label>
+                <input type="text" id="setting-unit-name" class="form-control" value="គ.ជ.ប">
+              </div>
+              <div class="form-group">
+                <label class="form-label">ឈ្មោះផ្នែក (Department)</label>
+                <input type="text" id="setting-dept-name" class="form-control" value="ល.ខ.ប តាកែវ">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">ឈ្មោះប្រធាន ល.ខ.ប (Chief Name)</label>
+                <input type="text" id="setting-chief-name" class="form-control" value="ហែម បញ្ញា">
+              </div>
+              <div class="form-group">
+                <label class="form-label">ប្រធានផ្នែករដ្ឋបាល និងហិរញ្ញវត្ថុ</label>
+                <input type="text" id="setting-fin-officer" class="form-control" value="វ៉ាន់ សេរីរ័ត្ន">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">💾 រក្សាទុកព័ត៌មានស្ថាប័ន</button>
+          </form>
+        </div>
+
+        <!-- Sub Content: Telegram -->
+        <div id="sub-telegram" class="sub-content">
+          <form onsubmit="saveSettings(event)">
+            <div class="form-group">
+              <label class="form-label">Telegram Bot Token</label>
+              <input type="text" id="setting-tg-token" class="form-control" placeholder="123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Telegram Chat ID / Group ID</label>
+              <input type="text" id="setting-tg-chatid" class="form-control" placeholder="-100123456789">
+            </div>
+            <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+              <input type="checkbox" id="setting-tg-enabled">
+              <label for="setting-tg-enabled" class="form-label" style="margin-bottom: 0;">បើកការជូនដំណឹងទៅ Telegram ពេលមានការបញ្ចេញប្រេង</label>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button type="submit" class="btn btn-primary btn-sm">💾 រក្សាទុក</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="fetch('/api/test-telegram', {method:'POST'}).then(r=>r.json()).then(d=>showToast(d.message||d.error, d.success?'success':'error'))">🔔 សាកល្បងផ្ញើសារ (Test)</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Sub Content: Google Apps Script Code -->
+        <div id="sub-script" class="sub-content">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <p style="font-size: 13px; color: #475569; margin: 0;">
+              សូមចម្លងកូដខាងក្រោមនេះយកទៅបិទភ្ជាប់ក្នុង Extensions &gt; Apps Script លើ Google Sheet របស់អ្នក៖
+            </p>
+            <button class="btn btn-primary btn-sm" onclick="copyAppsScriptCode()">📋 ចម្លងកូដ (Copy Code)</button>
+          </div>
+          <pre id="apps-script-code-block" style="background: #1e293b; color: #f8fafc; padding: 16px; border-radius: 8px; font-size: 12px; max-height: 400px; overflow-y: auto; font-family: monospace;">
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "ok",
+    message: "Google Sheets Web App Endpoint សម្រាប់គ្រប់គ្រងរបាយការណ៍ប្រេង PEC21 ដំណើរការធម្មតា!",
+    timestamp: new Date().toISOString()
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    var rawData = e.postData.contents;
+    var data = JSON.parse(rawData);
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    if (data.action === "sync_all") {
+      // 1. Sheet បញ្ជីរាយនាមមន្ត្រី
+      if (data.staff && Array.isArray(data.staff)) {
+        var staffSheet = ss.getSheetByName("បញ្ជីរាយនាម") || ss.insertSheet("បញ្ជីរាយនាម");
+        staffSheet.clear();
+        staffSheet.appendRow(["ល.រ", "គោត្តនាម-នាម", "ភេទ", "ងារ", "តួនាទី", "លេខទូរស័ព្ទ", "យានយន្ត/ស្លាកលេខ"]);
+        data.staff.forEach(function(s, idx) {
+          staffSheet.appendRow([s.id || idx + 1, s.name || "", s.gender || "", s.honorific || "", s.role || "", s.phone || "", s.vehicle || ""]);
+        });
+      }
+
+      // 2. Sheet ការប្រើប្រាស់ប្រេង
+      if (data.fuelTransactions && Array.isArray(data.fuelTransactions)) {
+        var txSheet = ss.getSheetByName("ការប្រើប្រាស់ប្រេង") || ss.insertSheet("ការប្រើប្រាស់ប្រេង");
+        txSheet.clear();
+        txSheet.appendRow([
+          "ល.រ", "កាលបរិច្ឆេទ", "លេខបេសកកម្ម", "លេខឧទ្ទេសនាម", "លេខសំណើ", "លេខប័ណ្ណ",
+          "ឈ្មោះអ្នកស្នើសុំ", "ងារ", "តួនាទី", "គោលបំណង/មធ្យោបាយ",
+          "សាំង EA បញ្ចូល", "សាំង EA បញ្ចេញ",
+          "ម៉ាស៊ូត DO បញ្ចូល", "ម៉ាស៊ូត DO បញ្ចេញ",
+          "ប្រេងម៉ាស៊ីន MO បញ្ចូល", "ប្រេងម៉ាស៊ីន MO បញ្ចេញ",
+          "ស្ថានភាព"
+        ]);
+
+        data.fuelTransactions.forEach(function(tx, idx) {
+          txSheet.appendRow([
+            idx + 1, tx.date || "", tx.mission_no || "", tx.intro_no || "", tx.req_no || "", tx.voucher_no || "",
+            tx.requester_name || "", tx.honorific || "", tx.role || "", tx.purpose || tx.description || "",
+            tx.gasoline_in || 0, tx.gasoline_out || 0, tx.diesel_in || 0, tx.diesel_out || 0,
+            tx.oil_in || 0, tx.oil_out || 0, tx.status || "approved"
+          ]);
+        });
+      }
+
+      // 3. Sheet សន្និធិប្រេង (Stock Summary)
+      var stockSheet = ss.getSheetByName("សន្និធិប្រេង") || ss.insertSheet("សន្និធិប្រេង");
+      stockSheet.clear();
+      stockSheet.appendRow(["ប្រភេទប្រេង", "សមតុល្យដើមគ្រា", "បញ្ចូលក្នុងគ្រា", "បញ្ចេញក្នុងគ្រា", "សមតុល្យចុងគ្រា"]);
+      var op = data.stockOpening || { gasoline: 250, diesel: 640, oil: 50 };
+      var inf = data.stockInflow || { gasoline: 0, diesel: 0, oil: 0 };
+      var gasOut = 0, dieselOut = 0, oilOut = 0;
+      if (data.fuelTransactions) {
+        data.fuelTransactions.forEach(function(t) {
+          gasOut += Number(t.gasoline_out) || 0;
+          dieselOut += Number(t.diesel_out) || 0;
+          oilOut += Number(t.oil_out) || 0;
+        });
+      }
+      stockSheet.appendRow(["ប្រេងសាំង (E.A)", op.gasoline, inf.gasoline, gasOut, (Number(op.gasoline) + Number(inf.gasoline) - gasOut)]);
+      stockSheet.appendRow(["ប្រេងម៉ាស៊ូត (D.O)", op.diesel, inf.diesel, dieselOut, (Number(op.diesel) + Number(inf.diesel) - dieselOut)]);
+      stockSheet.appendRow(["ប្រេងម៉ាស៊ីន (M.O)", op.oil, inf.oil, oilOut, (Number(op.oil) + Number(inf.oil) - oilOut)]);
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "ទិន្នន័យត្រូវបានធ្វើសមកាលកម្មទៅកាន់ Google Sheet ដោយជោគជ័យ!",
+        count: (data.fuelTransactions ? data.fuelTransactions.length : 0),
+        timestamp: new Date().toISOString()
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+          </pre>
+        </div>
+
+        <!-- Sub Content: Backup -->
+        <div id="sub-backup" class="sub-content">
+          <p style="font-size: 13px; color: #475569; margin-bottom: 12px;">
+            បង្កើតឯកសារបម្រុងទុក (Backup Snapshot) ឬទាញយកមកទុកលើម៉ាស៊ីនដើម្បីសុវត្ថិភាពទិន្នន័យ៖
+          </p>
+          <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+            <button class="btn btn-primary btn-sm" onclick="fetch('/api/backup', {method:'POST'}).then(r=>r.json()).then(d=>showToast(d.message, 'success'))">💾 បង្កើត Backup ថ្មី</button>
+          </div>
+        </div>
+
+        <!-- Sub Content: Danger Zone -->
+        <div id="sub-danger" class="sub-content">
+          <div style="border: 2px dashed #ef4444; border-radius: 8px; padding: 16px; background: #fef2f2;">
+            <h4 style="color: #991b1b; font-size: 14px; font-weight: 700; margin-bottom: 6px;">⚠️ តំបន់គ្រោះថ្នាក់ (Reset System)</h4>
+            <p style="color: #b91c1c; font-size: 12px; margin-bottom: 12px;">
+              ការកំណត់ទិន្នន័យឡើងវិញនឹងស្តារប្រព័ន្ធទៅទម្រង់ដើមដំបូង (Original Seed Data)។ ប្រព័ន្ធនឹងបង្កើត Backup ដោយស្វ័យប្រវត្តិកុំឱ្យបាត់បង់ទិន្នន័យ។
+            </p>
+            <button class="btn btn-danger btn-sm" onclick="resetAllSystemData()">🔥 កំណត់ប្រព័ន្ធឡើងវិញដំបូង (Reset All Data)</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: ADD / EDIT FUEL -->
+  <div class="modal-overlay" id="modal-fuel">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="fuel-modal-title">➕ បញ្ចូលការបញ្ចេញប្រេងថ្មី</div>
+        <button class="modal-close" onclick="closeModal('modal-fuel')">&times;</button>
+      </div>
+      <form id="fuel-form" onsubmit="saveFuelTx(event)">
+        <div class="modal-body">
+          <input type="hidden" id="tx-id">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">កាលបរិច្ឆេទ</label>
+              <input type="date" id="tx-date" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">លេខប័ណ្ណ</label>
+              <input type="text" id="tx-voucher-no" class="form-control" placeholder="105">
+            </div>
+            <div class="form-group">
+              <label class="form-label">លេខសំណើ</label>
+              <input type="text" id="tx-req-no" class="form-control" placeholder="105">
+            </div>
+            <div class="form-group">
+              <label class="form-label">លេខឧទ្ទេសនាម</label>
+              <input type="text" id="tx-intro-no" class="form-control" placeholder="100">
+            </div>
+          </div>
+
+          <div class="form-group" style="background: #f1f5f9; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
+            <label class="form-label" style="color: #1e40af;">👤 ជ្រើសរើសមន្ត្រីស្នើសុំ (ពីបញ្ជីរាយនាម):</label>
+            <select id="tx-staff-select" class="form-control" style="margin-bottom: 10px;">
+              <!-- Auto filled -->
+            </select>
+
+            <div class="form-row">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">ងារ</label>
+                <select id="tx-honorific" class="form-control">
+                  <option value="លោក">លោក</option>
+                  <option value="លោកស្រី">លោកស្រី</option>
+                  <option value="កញ្ញា">កញ្ញា</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">ឈ្មោះអ្នកស្នើសុំ</label>
+                <input type="text" id="tx-requester-name" class="form-control" placeholder="ឈ្មោះមន្ត្រី" required>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">ភេទ</label>
+                <select id="tx-gender" class="form-control">
+                  <option value="ប">ប្រុស (ប)</option>
+                  <option value="ស">ស្រី (ស)</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">តួនាទី</label>
+                <input type="text" id="tx-role" class="form-control" placeholder="តួនាទី">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">គោលបំណង / មធ្យោបាយប្រើប្រាស់ (Vehicle, Plate, Mission Description)</label>
+            <textarea id="tx-purpose" class="form-control" rows="2" placeholder="ឧ. បើកជូនលោក... ចាក់រថយន្ត Toyota Vigo ស្លាកលេខ គ.ជ.ប 2-0113 ដើម្បីចុះទៅពិនិត្យ..." required></textarea>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px;">
+            <div style="font-weight: 700; font-size: 13px; margin-bottom: 10px;">⛽ បរិមាណប្រេងត្រូវបញ្ចេញ (លីត្រ):</div>
+            <div class="form-row">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="color: #059669;">🟢 សាំង E.A (លីត្រ)</label>
+                <input type="number" id="tx-gas-out" class="form-control" min="0" value="0" step="any" oninput="updateKhmerWordsField(this, 'tx-gas-words')">
+                <input type="text" id="tx-gas-words" class="form-control" style="margin-top: 4px; font-size: 11px; background: #f1f5f9;" readonly placeholder="សូន្យលីត្រ">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="color: #2563eb;">🔵 ម៉ាស៊ូត D.O (លីត្រ)</label>
+                <input type="number" id="tx-diesel-out" class="form-control" min="0" value="0" step="any" oninput="updateKhmerWordsField(this, 'tx-diesel-words')">
+                <input type="text" id="tx-diesel-words" class="form-control" style="margin-top: 4px; font-size: 11px; background: #f1f5f9;" readonly placeholder="សូន្យលីត្រ">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="color: #d97706;">🟡 ប្រេងម៉ាស៊ីន M.O (លីត្រ)</label>
+                <input type="number" id="tx-oil-out" class="form-control" min="0" value="0" step="any" oninput="updateKhmerWordsField(this, 'tx-oil-words')">
+                <input type="text" id="tx-oil-words" class="form-control" style="margin-top: 4px; font-size: 11px; background: #f1f5f9;" readonly placeholder="សូន្យលីត្រ">
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-fuel')">បោះបង់</button>
+          <button type="submit" class="btn btn-primary">💾 រក្សាទុក</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: INFLOW (ទទួលប្រេងពី គ.ជ.ប) -->
+  <div class="modal-overlay" id="modal-inflow">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal-header">
+        <div class="modal-title">📥 កត់ត្រាការទទួលប្រេងពី គ.ជ.ប</div>
+        <button class="modal-close" onclick="closeModal('modal-inflow')">&times;</button>
+      </div>
+      <form id="inflow-form" onsubmit="saveInflow(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">កាលបរិច្ឆេទទទួល</label>
+            <input type="date" id="inflow-date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">លេខលិខិត ឬឯកសារយោង</label>
+            <input type="text" id="inflow-doc-no" class="form-control" placeholder="ឧ. លិខិតលេខ ... គ.ជ.ប">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" style="color: #059669;">សាំង E.A (លីត្រ)</label>
+              <input type="number" id="inflow-gas" class="form-control" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="color: #2563eb;">ម៉ាស៊ូត D.O (លីត្រ)</label>
+              <input type="number" id="inflow-diesel" class="form-control" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="color: #d97706;">ប្រេងម៉ាស៊ីន M.O (លីត្រ)</label>
+              <input type="number" id="inflow-oil" class="form-control" min="0" value="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ការពិពណ៌នា</label>
+            <input type="text" id="inflow-desc" class="form-control" value="ទទួលប្រេងពី គ.ជ.ប">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-inflow')">បោះបង់</button>
+          <button type="submit" class="btn btn-warning">📥 កត់ត្រាចូលស្តុក</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT STAFF -->
+  <div class="modal-overlay" id="modal-staff">
+    <div class="modal" style="max-width: 550px;">
+      <div class="modal-header">
+        <div class="modal-title" id="staff-modal-title">➕ បន្ថែមមន្ត្រីថ្មី</div>
+        <button class="modal-close" onclick="closeModal('modal-staff')">&times;</button>
+      </div>
+      <form id="staff-form" onsubmit="saveStaff(event)">
+        <div class="modal-body">
+          <input type="hidden" id="staff-id">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">គោត្តនាម-នាម</label>
+              <input type="text" id="staff-name" class="form-control" required placeholder="ឧ. ហែម បញ្ញា">
+            </div>
+            <div class="form-group">
+              <label class="form-label">ងារ</label>
+              <select id="staff-honorific" class="form-control">
+                <option value="លោក">លោក</option>
+                <option value="លោកស្រី">លោកស្រី</option>
+                <option value="កញ្ញា">កញ្ញា</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">ភេទ</label>
+              <select id="staff-gender" class="form-control">
+                <option value="ប">ប្រុស (ប)</option>
+                <option value="ស">ស្រី (ស)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">តួនាទី / មុខតំណែង</label>
+            <input type="text" id="staff-role" class="form-control" placeholder="ឧ. ប្រធានផ្នែករដ្ឋបាល និងហិរញ្ញវត្ថុ">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">លេខទូរស័ព្ទ</label>
+              <input type="text" id="staff-phone" class="form-control" placeholder="012 345 678">
+            </div>
+            <div class="form-group">
+              <label class="form-label">យានយន្ត / ស្លាកលេខ</label>
+              <input type="text" id="staff-vehicle" class="form-control" placeholder="Toyota Hilux គ.ជ.ប 2-0170">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-staff')">បោះបង់</button>
+          <button type="submit" class="btn btn-primary">💾 រក្សាទុក</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT USER -->
+  <div class="modal-overlay" id="modal-user">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal-header">
+        <div class="modal-title" id="user-modal-title">➕ បង្កើតគណនីថ្មី</div>
+        <button class="modal-close" onclick="closeModal('modal-user')">&times;</button>
+      </div>
+      <form id="user-form" onsubmit="saveUser(event)">
+        <div class="modal-body">
+          <input type="hidden" id="user-id">
+          <div class="form-group">
+            <label class="form-label">ឈ្មោះគណនី (Username)</label>
+            <input type="text" id="user-username" class="form-control" required placeholder="ឧ. pec21_officer">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ពាក្យសម្ងាត់ (Password)</label>
+            <input type="password" id="user-password" class="form-control" required placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ឈ្មោះពេញ (Full Name)</label>
+            <input type="text" id="user-name" class="form-control" required placeholder="ឈ្មោះអ្នកប្រើប្រាស់">
+          </div>
+          <div class="form-group">
+            <label class="form-label">តួនាទី (Role)</label>
+            <select id="user-role" class="form-control" required>
+              <option value="SuperAdmin">SuperAdmin (អភិបាលជាន់ខ្ពស់)</option>
+              <option value="Admin">Admin (អភិបាល)</option>
+              <option value="PEC21">PEC21 (គណៈកម្មការរៀបចំការបោះឆ្នោត)</option>
+              <option value="មន្ត្រី ល.ខ.ប">មន្ត្រី ល.ខ.ប</option>
+              <option value="អ្នកបញ្ចូលទិន្នន័យ">អ្នកបញ្ចូលទិន្នន័យ</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-user')">បោះបង់</button>
+          <button type="submit" class="btn btn-primary">💾 រក្សាទុក</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: WI-FI QR CODE -->
+  <div class="modal-overlay" id="modal-wifi-qr">
+    <div class="modal" style="max-width: 420px; text-align: center;">
+      <div class="modal-header">
+        <div class="modal-title">📶 ស្កេន QR ប្រើលើទូរស័ព្ទដៃ / ថេបប្លេត</div>
+        <button class="modal-close" onclick="closeModal('modal-wifi-qr')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">
+          សូមភ្ជាប់ Wi-Fi ឬបើក Hotspot តែមួយជាមួយកុំព្យូទ័រនេះ រួចបើកកាមេរ៉ាទូរស័ព្ទស្កេន QR Code ខាងក្រោម៖
+        </p>
+        <img id="wifi-qr-image" src="" alt="Wi-Fi QR Code" style="width: 200px; height: 200px; border: 1px solid #cbd5e1; border-radius: 8px; margin: 0 auto; display: block;">
+        <div style="margin-top: 15px;">
+          <a id="wifi-qr-link" href="#" target="_blank" style="font-family: monospace; font-size: 13px; color: #1e40af; word-break: break-all; font-weight: bold;"></a>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content: center;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="closeModal('modal-wifi-qr')">យល់ព្រម</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DOCUMENT PRINT PREVIEW -->
+  <div class="modal-overlay" id="modal-preview">
+    <div class="modal" style="max-width: 900px; height: 90vh;">
+      <div class="modal-header">
+        <div class="modal-title" id="preview-modal-title">🖨️ ទម្រង់បោះពុម្ពឯកសារ</div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="btn btn-success btn-sm" id="btn-download-word">📥 ទាញយកជា Word (.docx)</button>
+          <button class="btn btn-primary btn-sm" onclick="printDocumentNow()">🖨️ បោះពុម្ព (Print)</button>
+          <button class="modal-close" onclick="closeModal('modal-preview')">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body" style="background: #f1f5f9; padding: 20px;">
+        <div id="preview-render-area" style="background: white; border: 1px solid #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 4px; max-width: 800px; margin: 0 auto;">
+          <!-- Document preview rendered here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Printable Area for window.print() -->
+  <div id="print-area"></div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/printPreview.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
